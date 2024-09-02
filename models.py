@@ -1,12 +1,12 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date, Time
 from database import Base
 
-class Item(Base):
+class License(Base):
   __tablename__ = 'licenses'
     
   license_id                = Column(Integer, autoincrement=True, primary_key=True, index=True)
-  customer_na               = Column(String, nullable=False)
-  license_number            = Column(String, nullable=False)
+  customer_name             = Column(String, nullable=False)
+  license_key               = Column(String, nullable=False)
   license_generation_day    = Column(Date, default=None)
   license_generation_time   = Column(Time, default=None)
   license_type              = Column(String, nullable=False)
