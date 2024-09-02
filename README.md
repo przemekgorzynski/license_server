@@ -29,7 +29,7 @@ export POSTGRESQL_PORT=<<redacted>>
 - sqlalchemy
 - psycopg2
 
-`pip3 install fastapi pydantic uvicorn os psycopg2 sqlalchemy`
+`pip3 install fastapi pydantic uvicorn psycopg-binary sqlalchemy`
 
 
 # Uvicorn

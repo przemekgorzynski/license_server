@@ -13,16 +13,15 @@ app = FastAPI()
 # Create tables definition from model.py file
 models.Base.metadata.create_all(bind=engine)
 
-# Base Model for items
-class Licenses(BaseModel):
-  cust_id: str
-  cust_name: str
-  license_number: str
-  license_type: str
-  license_activarion_day: date
-  license_expiration_day: date
-  license_status: bool
-
+# Class for license generation
+class License_denerate(BaseModel):
+    cust_id: str
+    cust_name: str
+    license_number: str
+    license_generation_date: date
+    license_type: str
+    license_expiration_day: date
+    is_license_activated: bool
 
 # DB Connection
 def get_db():
@@ -32,34 +31,36 @@ def get_db():
   finally:
     db.close()
 
+# Main endpoint
 @app.get("/")
 async def read_api():
   return {"message": "Licensing API"}
 
-@app.get("/list_all_licenses")
-async def list_all_licenses(db: Session = Depends(get_db)):
-    # Define your SQL query here
-    query = text("SELECT license_number FROM licences")
-    
-    # Execute the query
-    result = db.execute(query)
-    
-    # Fetch all results
-    rows = result.fetchall()
-    
-    
-    return {"licenses": rows}
+# Get all on stock items from DB
+@app.get("/licenses/get_all")
+async def get_all_licenses(db: Session = Depends(get_db)):
+    items = db.query(models.Item).all()
+    return items
 
+# Get all on stock items from DB
+@app.get("/licenses/get_active")
+async def get_active_licenses(db: Session = Depends(get_db)):
+    items = db.query(models.Item).filter(models.Item.is_license_activated == True).all()
+    return items
+
+@app.get("/licenses/get_inactive")
+async def get_inactive_licenses(db: Session = Depends(get_db)):
+    items = db.query(models.Item).filter(models.Item.is_license_activated == False).all()
+    return items
 
 # Custom swagger definition, path /docs
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Przemas' API",
+        title="Licensing API",
         version="1.0.0",
-        summary="This is a very custom OpenAPI schema",
-        description="Here's a longer description of the custom **OpenAPI** schema",
+        description="API to handle licensing info Postgres Database",
         routes=app.routes,
     )
     app.openapi_schema = openapi_schema
